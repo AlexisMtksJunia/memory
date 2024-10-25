@@ -25,3 +25,17 @@ jobs:
               # Ajoutez ici la commande pour remplacer l'image corrompue si besoin
             fi
           done
+
+  # 4.2 : Job de build : construit l'image Docker du site
+  build-memory:
+    # Ce job dépend du job "test-memory" et ne s'exécute qu'après lui
+    needs: test-memory
+    runs-on: self-hosted
+    steps:
+      # Étape de checkout : Récupère le code source depuis le dépôt
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Étape de construction : construit l'image Docker nommée <username>/memory
+      - name: Build Docker image
+        run: docker build -t AlexisMtksJunia/memory .
