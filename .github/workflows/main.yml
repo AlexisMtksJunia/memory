@@ -50,12 +50,20 @@ jobs:
     needs: push-memory
     runs-on: self-hosted
     steps:
+      - name: Start ssh-agent
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
       - name: SSH into host and deploy with docker run
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         run: |
-          ssh user@host '
-            docker login -u alexismtksjunia -p YOUR_PASSWORD &&
-            docker pull alexismtksjunia/memory &&
+          ssh alexis@192.168.1.100 '
+            echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin &&
+            docker pull $DOCKER_USERNAME/memory &&
             docker stop memory || true &&
             docker rm memory || true &&
-            docker run -d --name memory -p 8080:8080 alexismtksjunia/memory
+            docker run -d --name memory -p 8080:8080 $DOCKER_USERNAME/memory
           '
