@@ -14,9 +14,7 @@ COPY html /var/concentration/html
 COPY conf/nginx.conf /etc/nginx/nginx.conf
 
 # Exposer le port 8080 pour accéder au site
->>>>>>> 0d08730 (Ajout du Dockerfile et configuration Nginx pour le port 8080)
 EXPOSE 8080
 
 # Démarrer nginx
 CMD ["nginx", "-g", "daemon off;"]
-
