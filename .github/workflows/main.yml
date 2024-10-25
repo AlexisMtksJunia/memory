@@ -1,8 +1,0 @@
-name: CI Memory
-
-# Déclenchement du workflow dès qu'un push est détecté sur la branche "develop"
-on:
-  push:
-    branches:
-      - develop
-
