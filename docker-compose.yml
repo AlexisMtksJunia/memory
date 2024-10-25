@@ -1,0 +1,7 @@
+version: '3'
+
+services:
+  memory-app:
+    image: AlexisMtksJunia/memory
+    ports:
+      - "8080:8080"
