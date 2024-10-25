@@ -67,3 +67,4 @@ jobs:
             docker rm memory || true &&
             docker run -d --name memory -p 8080:8080 $DOCKER_USERNAME/memory
           '
+          
