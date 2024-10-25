@@ -44,3 +44,17 @@ jobs:
 
       - name: Push Docker image
         run: docker push alexismtksjunia/memory:latest
+
+  deploy-memory:
+    needs: push-memory
+    runs-on: self-hosted
+    steps:
+      - name: SSH into host and deploy with docker run
+        run: |
+        ssh user@host '
+        docker login -u alexismtksjunia -p YOUR_PASSWORD &&
+        docker pull alexismtksjunia/memory &&
+        docker stop memory || true &&
+        docker rm memory || true &&
+        docker run -d --name memory -p 8080:8080 alexismtksjunia/memory
+        '
