@@ -8,7 +8,7 @@ on:
       - develop
 
 jobs:
-  # Job de test : vérifie l'intégrité des fichiers JPEG
+  # 4.1 : Job de test : vérifie l'intégrité des fichiers JPEG
   test-memory:
     runs-on: self-hosted
     steps:
@@ -23,7 +23,7 @@ jobs:
             fi
           done
 
-  # Job de build : construit l'image Docker du site
+  # 4.2 : Job de build : construit l'image Docker du site
   build-memory:
     needs: test-memory
     runs-on: self-hosted
@@ -33,4 +33,15 @@ jobs:
 
       - name: Build Docker image
         run: docker build -t AlexisMtksJunia/memory .
-        
+
+  # 4.3 : Job de push : pousse l'image Docker sur DockerHub
+  push-memory:
+    needs: build-memory
+    runs-on: self-hosted
+    steps:
+      - name: Login to DockerHub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Push Docker image
+        run: docker push AlexisMtksJunia/memory
+
