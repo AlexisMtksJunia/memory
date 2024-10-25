@@ -1,0 +1,36 @@
+# Nom du workflow pour la CI/CD de l'application Memory
+name: CI Memory
+
+# Déclenchement du workflow dès qu'un push est détecté sur la branche "develop"
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  # Job de test : vérifie l'intégrité des fichiers JPEG
+  test-memory:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: Run file command on jpgs
+        run: |
+          for img in $(find . -name "*.jpg"); do
+            if ! file "$img" | grep -q "JPEG image data"; then
+              echo "$img est corrompu. Remplacez-le par un fichier de votre choix."
+            fi
+          done
+
+  # Job de build : construit l'image Docker du site
+  build-memory:
+    needs: test-memory
+    runs-on: self-hosted
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build Docker image
+        run: docker build -t AlexisMtksJunia/memory .
+        
