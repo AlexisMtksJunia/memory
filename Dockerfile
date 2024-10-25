@@ -1,4 +1,4 @@
-# Utiliser une image nginx comme base
+# Utiliser  une image nginx comme base
 FROM nginx:latest
 
 # Installer le package 'file' pour les vérifications d'image
