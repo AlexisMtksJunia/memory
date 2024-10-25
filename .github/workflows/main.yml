@@ -14,12 +14,13 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      
+
       - name: Run file command on jpgs
         run: |
           for img in $(find . -name "*.jpg"); do
             if ! file "$img" | grep -q "JPEG image data"; then
               echo "$img est corrompu. Remplacez-le par un fichier de votre choix."
+              exit 1
             fi
           done
 
@@ -32,7 +33,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Build Docker image
-        run: docker build -t alexismtksjunia/memory .
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/memory .
 
   # 4.3 : Job de push : pousse l'image Docker sur DockerHub
   push-memory:
@@ -43,19 +44,27 @@ jobs:
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
       - name: Push Docker image
-        run: docker push alexismtksjunia/memory:latest
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/memory:latest
 
-  # 4.4 : Job de déploiement : déploie l'image sur la machine de l'utilisateur
+  # Job de déploiement : déploie l'image sur la machine de l'utilisateur
   deploy-memory:
     needs: push-memory
     runs-on: self-hosted
     steps:
+      - name: Start ssh-agent
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
       - name: SSH into host and deploy with docker run
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         run: |
-          ssh user@host '
-            docker login -u alexismtksjunia -p YOUR_PASSWORD &&
-            docker pull alexismtksjunia/memory &&
+          ssh alexis@192.168.1.100 '
+            echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin &&
+            docker pull $DOCKER_USERNAME/memory &&
             docker stop memory || true &&
             docker rm memory || true &&
-            docker run -d --name memory -p 8080:8080 alexismtksjunia/memory
+            docker run -d --name memory -p 8080:8080 $DOCKER_USERNAME/memory
           '
