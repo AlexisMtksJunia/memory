@@ -39,3 +39,5 @@ jobs:
       # Étape de construction : construit l'image Docker nommée <username>/memory
       - name: Build Docker image
         run: docker build -t AlexisMtksJunia/memory .
+
+        
