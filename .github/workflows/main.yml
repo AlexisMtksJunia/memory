@@ -59,4 +59,4 @@ jobs:
 
       - name: SSH into host and deploy with docker-compose
         run: |
-          ssh -o StrictHostKeyChecking=no alexis@192.168.1.10 'docker pull alexismtksjunia/memory && docker run -d -p 8080:8080 alexismtksjunia/memory'
+          ssh -o StrictHostKeyChecking=no alexis@185.169.159.134 'docker pull alexismtksjunia/memory && docker run -d -p 8080:8080 alexismtksjunia/memory'
